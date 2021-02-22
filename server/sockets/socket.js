@@ -24,15 +24,19 @@ io.on('connection', (client) => {
 
         client.broadcast.to(data.sala).emit('listaUsuarios', usuario.getUsuariosPorSala(data.sala))
 
+        client.broadcast.to(data.sala).emit('crearMensaje', crearMensaje('Administrador', `${data.nombre} se unió al chat.`))
+
         callback(usuario.getUsuariosPorSala(data.sala))
     })
 
-    client.on('crearMensaje', (data) => {
+    client.on('crearMensaje', (data, callback) => {
         let user = usuario.getUsuario(client.id)
 
         let mensaje = crearMensaje(user.nombre, data.mensaje)
         
         client.broadcast.to(user.sala).emit('crearMensaje', mensaje)
+
+        callback(mensaje)
     })
 
     client.on('disconnect', () => {
